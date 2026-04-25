@@ -5,7 +5,6 @@ A lightweight mobile-first web app for day-to-day tyre stock control in a garage
 ## What it does
 - Add incoming tyres by size, brand, and quantity.
 - Pick a brand quickly using tap-friendly brand chips or type it manually (no small phone dropdowns).
-- Track tyre categories for **Passenger / Performance / SUV / Van / Motorcycle**, plus **Run-Flat** and **EV** markers.
 - See current stock instantly with low-stock highlighting.
 - Mark tyres as sold in one tap (`-1 Sold`).
 - Mark quick incoming stock in one tap (`+1 In`).
@@ -13,7 +12,6 @@ A lightweight mobile-first web app for day-to-day tyre stock control in a garage
 - Track recent stock movements (incoming/sold) with timestamps.
 - Personalized owner name (defaults to **Marek**).
 - Works offline after first load via service worker.
-- Brand suggestions include popular European and Chinese brands commonly sold across Europe (including Ireland).
 
 ## Data storage
 All data is stored in the browser `localStorage` on the device:
