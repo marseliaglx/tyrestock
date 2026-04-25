@@ -296,13 +296,19 @@
         let history = JSON.parse(localStorage.getItem('tyreHistory')) || [];
         let ownerName = localStorage.getItem('tyreOwnerName') || 'Marek';
 
+        function normalizeVehicleType(vehicleType) {
+            if (typeof vehicleType !== 'string') return DEFAULT_VEHICLE_TYPE;
+            return vehicleType.trim() || DEFAULT_VEHICLE_TYPE;
+        }
+
         function normalizeInventoryRecords(items) {
             const merged = new Map();
 
             items.forEach(rawItem => {
                 const item = {
                     ...rawItem,
-                    vehicleType: rawItem.vehicleType || DEFAULT_VEHICLE_TYPE
+                    quantity: Number(rawItem.quantity) || 0,
+                    vehicleType: normalizeVehicleType(rawItem.vehicleType)
                 };
                 const key = `${item.size}::${item.brand}::${item.vehicleType}`;
                 const existing = merged.get(key);
@@ -412,14 +418,14 @@
             const existing = inventory.find(item =>
                 item.size === size &&
                 item.brand === brand &&
-                (item.vehicleType || DEFAULT_VEHICLE_TYPE) === vehicleType
+                normalizeVehicleType(item.vehicleType) === normalizeVehicleType(vehicleType)
             );
             if (existing) {
                 existing.quantity += quantity;
                 addHistory('incoming', existing, quantity);
                 showToast(`✅ Incoming +${quantity}: ${brand} ${size}`);
             } else {
-                const item = { id: Date.now(), size, brand, quantity, vehicleType };
+                const item = { id: Date.now(), size, brand, quantity, vehicleType: normalizeVehicleType(vehicleType) };
                 inventory.push(item);
                 addHistory('incoming', item, quantity);
                 showToast(`✅ Added new stock: ${brand} ${size} (${quantity})`);
