@@ -95,43 +95,6 @@
         .btn-danger:hover { background: #be2837; }
         .btn-secondary { background: #eff3ff; color: #1a73e8; padding: 8px 12px; }
         .btn-secondary:hover { background: #dfe9ff; }
-        .btn-outline {
-            background: #fff;
-            color: #1a73e8;
-            border: 1px solid #c9d8ff;
-            padding: 10px 12px;
-            min-width: 44px;
-        }
-        .btn-outline:hover { background: #f2f6ff; }
-
-        .quantity-stepper {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .quantity-stepper input {
-            text-align: center;
-            font-weight: 700;
-        }
-
-        .quick-brands {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .quick-brands button {
-            flex: 0 0 auto;
-            border: 1px solid #d9e4ff;
-            background: #fff;
-            color: #1a73e8;
-            border-radius: 999px;
-            padding: 8px 12px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        .quick-brands button:hover { background: #eef3ff; }
 
         .search-input {
             background: #fff;
@@ -171,7 +134,7 @@
         }
         .action-btn {
             min-width: 46px;
-            height: 44px;
+            height: 38px;
             border: 1px solid #d7def7;
             background: #fff;
             color: #1a73e8;
@@ -280,39 +243,26 @@
         </div>
         <div class="form-row">
             <div class="form-group" style="flex: 1;">
-                <label for="tyreBrand">Brand (type or tap)</label>
-                <input type="text" id="tyreBrand" list="brandSuggestions" placeholder="e.g. Michelin">
-                <datalist id="brandSuggestions">
-                    <option value="Michelin"><option value="Bridgestone"><option value="Continental">
-                    <option value="Pirelli"><option value="Goodyear"><option value="Dunlop">
-                    <option value="Hankook"><option value="Kumho"><option value="Falken">
-                    <option value="Yokohama"><option value="Toyo"><option value="Nexen">
-                    <option value="Linglong"><option value="Triangle"><option value="Sailun">
-                    <option value="Giti"><option value="Goodride"><option value="WestLake">
-                </datalist>
+                <label for="tyreBrand">Brand</label>
+                <select id="tyreBrand">
+                    <option value="">Select Brand</option>
+                    <optgroup label="Premium Brands">
+                        <option>Michelin</option><option>Bridgestone</option><option>Continental</option>
+                        <option>Pirelli</option><option>Goodyear</option><option>Dunlop</option>
+                    </optgroup>
+                    <optgroup label="Mid-Range Brands">
+                        <option>Hankook</option><option>Kumho</option><option>Falken</option>
+                        <option>Yokohama</option><option>Toyo</option><option>Nexen</option>
+                    </optgroup>
+                    <optgroup label="Budget Brands">
+                        <option>Linglong</option><option>Triangle</option><option>Sailun</option>
+                        <option>Giti</option><option>Goodride</option><option>WestLake</option>
+                    </optgroup>
+                </select>
             </div>
             <div class="form-group" style="flex: 1;">
                 <label for="tyreQuantity">Quantity</label>
-                <div class="quantity-stepper">
-                    <button type="button" class="btn-outline" onclick="adjustAddQuantity(-1)" aria-label="Decrease quantity">−</button>
-                    <input type="number" id="tyreQuantity" value="1" min="1" max="200">
-                    <button type="button" class="btn-outline" onclick="adjustAddQuantity(1)" aria-label="Increase quantity">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Quick brand buttons</label>
-            <div class="quick-brands">
-                <button type="button" onclick="pickBrand('Michelin')">Michelin</button>
-                <button type="button" onclick="pickBrand('Bridgestone')">Bridgestone</button>
-                <button type="button" onclick="pickBrand('Continental')">Continental</button>
-                <button type="button" onclick="pickBrand('Goodyear')">Goodyear</button>
-                <button type="button" onclick="pickBrand('Hankook')">Hankook</button>
-                <button type="button" onclick="pickBrand('Kumho')">Kumho</button>
-                <button type="button" onclick="pickBrand('Nexen')">Nexen</button>
-                <button type="button" onclick="pickBrand('Linglong')">Linglong</button>
-                <button type="button" onclick="pickBrand('Triangle')">Triangle</button>
-                <button type="button" onclick="pickBrand('Sailun')">Sailun</button>
+                <input type="number" id="tyreQuantity" value="1" min="1" max="200">
             </div>
         </div>
         <button type="button" class="btn-primary" onclick="addTyre()">➕ Add Incoming Stock</button>
@@ -415,7 +365,7 @@
         function addTyre() {
             const sizeRaw = document.getElementById('tyreSize').value.trim();
             const size = normalizeTyreSize(sizeRaw);
-            const brand = document.getElementById('tyreBrand').value.trim();
+            const brand = document.getElementById('tyreBrand').value;
             const quantity = parseInt(document.getElementById('tyreQuantity').value, 10);
 
             if (!size) {
@@ -447,18 +397,6 @@
             document.getElementById('tyreBrand').value = brand;
             document.getElementById('tyreQuantity').value = '1';
             saveAll();
-        }
-
-        function adjustAddQuantity(change) {
-            const input = document.getElementById('tyreQuantity');
-            const current = parseInt(input.value || '1', 10);
-            const next = Math.max(1, Math.min(200, current + change));
-            input.value = String(next);
-        }
-
-        function pickBrand(brand) {
-            document.getElementById('tyreBrand').value = brand;
-            showToast(`🏷️ Brand selected: ${brand}`);
         }
 
         function markIncoming(id) {
@@ -581,13 +519,6 @@
             if (e.key === 'Enter') {
                 e.preventDefault();
                 saveOwnerName();
-            }
-        });
-
-        document.getElementById('tyreBrand').addEventListener('keypress', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addTyre();
             }
         });
 
