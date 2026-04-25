@@ -291,9 +291,36 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        const DEFAULT_VEHICLE_TYPE = 'Passenger';
         let inventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
         let history = JSON.parse(localStorage.getItem('tyreHistory')) || [];
         let ownerName = localStorage.getItem('tyreOwnerName') || 'Marek';
+
+        function normalizeInventoryRecords(items) {
+            const merged = new Map();
+
+            items.forEach(rawItem => {
+                const item = {
+                    ...rawItem,
+                    vehicleType: rawItem.vehicleType || DEFAULT_VEHICLE_TYPE
+                };
+                const key = `${item.size}::${item.brand}::${item.vehicleType}`;
+                const existing = merged.get(key);
+
+                if (existing) {
+                    existing.quantity += item.quantity;
+                    return;
+                }
+                merged.set(key, item);
+            });
+
+            return Array.from(merged.values());
+        }
+
+        function getSelectedVehicleType() {
+            const activeSegment = document.querySelector('.vehicle-segment.active');
+            return activeSegment?.dataset?.vehicleType || DEFAULT_VEHICLE_TYPE;
+        }
 
         function saveAll() {
             localStorage.setItem('tyreInventory', JSON.stringify(inventory));
@@ -367,6 +394,7 @@
             const size = normalizeTyreSize(sizeRaw);
             const brand = document.getElementById('tyreBrand').value;
             const quantity = parseInt(document.getElementById('tyreQuantity').value, 10);
+            const vehicleType = getSelectedVehicleType();
 
             if (!size) {
                 showToast('⚠️ Please enter tyre size');
@@ -381,13 +409,17 @@
                 return;
             }
 
-            const existing = inventory.find(item => item.size === size && item.brand === brand);
+            const existing = inventory.find(item =>
+                item.size === size &&
+                item.brand === brand &&
+                (item.vehicleType || DEFAULT_VEHICLE_TYPE) === vehicleType
+            );
             if (existing) {
                 existing.quantity += quantity;
                 addHistory('incoming', existing, quantity);
                 showToast(`✅ Incoming +${quantity}: ${brand} ${size}`);
             } else {
-                const item = { id: Date.now(), size, brand, quantity };
+                const item = { id: Date.now(), size, brand, quantity, vehicleType };
                 inventory.push(item);
                 addHistory('incoming', item, quantity);
                 showToast(`✅ Added new stock: ${brand} ${size} (${quantity})`);
@@ -522,6 +554,7 @@
             }
         });
 
+        inventory = normalizeInventoryRecords(inventory);
         saveAll();
 
         if ('serviceWorker' in navigator) {
