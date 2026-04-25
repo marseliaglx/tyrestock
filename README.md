@@ -4,6 +4,7 @@ A lightweight mobile-first web app for day-to-day tyre stock control in a garage
 
 ## What it does
 - Add incoming tyres by size, brand, and quantity.
+- Pick a brand quickly using tap-friendly brand chips or type it manually (no small phone dropdowns).
 - See current stock instantly with low-stock highlighting.
 - Mark tyres as sold in one tap (`-1 Sold`).
 - Mark quick incoming stock in one tap (`+1 In`).
