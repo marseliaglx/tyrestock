@@ -1,11 +1,11 @@
-// sw.js - Service Worker for Tyre Stock Manager PWA
-const CACHE_NAME = 'tyre-stock-v1';
+// sw.js - Service Worker for Marek's Tyre Stock Manager
+const CACHE_NAME = 'marek-tyre-stock-v3';
 const ASSETS = [
-    '/',
-    '/index.html'
+    './',
+    './index.html',
+    './sw.js'
 ];
 
-// Install event - cache assets
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -14,22 +14,35 @@ self.addEventListener('install', event => {
     );
 });
 
-// Activate event - clean old caches
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(keys => {
-            return Promise.all(
-                keys.filter(key => key !== CACHE_NAME)
-                    .map(key => caches.delete(key))
-            );
-        }).then(() => self.clients.claim())
+        caches.keys()
+            .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+            .then(() => self.clients.claim())
     );
 });
 
-// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
+    const requestUrl = new URL(event.request.url);
+    const isNavigation = event.request.mode === 'navigate' ||
+        (event.request.headers.get('accept') || '').includes('text/html');
+
     event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
+        (async () => {
+            try {
+                const networkResponse = await fetch(event.request, { cache: 'no-store' });
+                if (requestUrl.origin === location.origin && networkResponse.ok) {
+                    const cache = await caches.open(CACHE_NAME);
+                    cache.put(event.request, networkResponse.clone());
+                }
+                return networkResponse;
+            } catch (error) {
+                const cached = await caches.match(event.request);
+                if (cached) return cached;
+                if (isNavigation) return caches.match('./index.html');
+                throw error;
+            }
+        })()
     );
 });
