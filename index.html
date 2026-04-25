@@ -301,16 +301,25 @@
             return vehicleType.trim() || DEFAULT_VEHICLE_TYPE;
         }
 
+        function buildInventoryKey(item) {
+            const size = normalizeTyreSize(item.size || '');
+            const brand = (item.brand || '').trim();
+            const vehicleType = normalizeVehicleType(item.vehicleType);
+            return `${size}::${brand}::${vehicleType}`;
+        }
+
         function normalizeInventoryRecords(items) {
             const merged = new Map();
 
             items.forEach(rawItem => {
                 const item = {
                     ...rawItem,
+                    size: normalizeTyreSize(rawItem.size || ''),
+                    brand: (rawItem.brand || '').trim(),
                     quantity: Number(rawItem.quantity) || 0,
                     vehicleType: normalizeVehicleType(rawItem.vehicleType)
                 };
-                const key = `${item.size}::${item.brand}::${item.vehicleType}`;
+                const key = buildInventoryKey(item);
                 const existing = merged.get(key);
 
                 if (existing) {
@@ -416,9 +425,7 @@
             }
 
             const existing = inventory.find(item =>
-                item.size === size &&
-                item.brand === brand &&
-                normalizeVehicleType(item.vehicleType) === normalizeVehicleType(vehicleType)
+                buildInventoryKey(item) === buildInventoryKey({ size, brand, vehicleType })
             );
             if (existing) {
                 existing.quantity += quantity;
