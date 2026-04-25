@@ -1,11 +1,11 @@
-// sw.js - Service Worker for Tyre Stock Manager PWA
-const CACHE_NAME = 'tyre-stock-v1';
+// sw.js - Service Worker for Marek's Tyre Stock Manager
+const CACHE_NAME = 'marek-tyre-stock-v2';
 const ASSETS = [
-    '/',
-    '/index.html'
+    './',
+    './index.html',
+    './sw.js'
 ];
 
-// Install event - cache assets
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -14,22 +14,25 @@ self.addEventListener('install', event => {
     );
 });
 
-// Activate event - clean old caches
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(keys => {
-            return Promise.all(
-                keys.filter(key => key !== CACHE_NAME)
-                    .map(key => caches.delete(key))
-            );
-        }).then(() => self.clients.claim())
+        caches.keys()
+            .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+            .then(() => self.clients.claim())
     );
 });
 
-// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
+
     event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
+        caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            return fetch(event.request).then(response => {
+                const copy = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+                return response;
+            });
+        })
     );
 });

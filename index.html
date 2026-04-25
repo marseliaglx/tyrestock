@@ -6,150 +6,181 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#1a73e8">
-    <title>Tyre Stock Manager</title>
+    <title>Marek's Tyre Stock Manager</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: #f5f5f5;
             color: #333;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 16px;
         }
-
         .header {
             background: #1a73e8;
-            color: white;
+            color: #fff;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+        .header h1 { font-size: 24px; margin-bottom: 6px; }
+        .header p { opacity: 0.92; }
 
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+        .owner-row {
+            background: #fff;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .owner-row label { white-space: nowrap; font-size: 14px; color: #555; font-weight: 500; }
 
         .stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
-
         .stat-card {
-            flex: 1;
-            background: white;
+            background: #fff;
             padding: 16px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .number { font-size: 28px; font-weight: 700; color: #1a73e8; }
+        .label { font-size: 12px; color: #666; margin-top: 4px; }
 
-        .stat-card .number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1a73e8;
-        }
-
-        .stat-card .label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .add-tyre-section {
-            background: white;
-            padding: 20px;
+        .card {
+            background: #fff;
+            padding: 18px;
             border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .card h3 { margin-bottom: 14px; }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            font-size: 14px;
-            color: #555;
-        }
-
+        .form-group { margin-bottom: 12px; }
+        .form-row { display: flex; gap: 10px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; color: #555; font-weight: 500; }
         input, select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            background: #fff;
         }
-
         input:focus, select:focus {
             outline: none;
             border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
         }
-
         button {
-            padding: 12px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #1a73e8; color: #fff; padding: 12px 16px; width: 100%; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-danger { background: #dc3545; color: #fff; padding: 8px 12px; }
+        .btn-danger:hover { background: #be2837; }
+        .btn-secondary { background: #eff3ff; color: #1a73e8; padding: 8px 12px; }
+        .btn-secondary:hover { background: #dfe9ff; }
+        .btn-outline {
+            background: #fff;
+            color: #1a73e8;
+            border: 1px solid #c9d8ff;
+            padding: 10px 12px;
+            min-width: 44px;
+        }
+        .btn-outline:hover { background: #f2f6ff; }
+
+        .quantity-stepper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .quantity-stepper input {
+            text-align: center;
+            font-weight: 700;
         }
 
-        .btn-primary {
-            background: #1a73e8;
-            color: white;
-            width: 100%;
+        .quick-brands {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            -webkit-overflow-scrolling: touch;
         }
-
-        .btn-primary:hover {
-            background: #1557b0;
+        .quick-brands button {
+            flex: 0 0 auto;
+            border: 1px solid #d9e4ff;
+            background: #fff;
+            color: #1a73e8;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 14px;
+            white-space: nowrap;
         }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
+        .quick-brands button:hover { background: #eef3ff; }
+        .segment-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-
-        .btn-sm {
+        .segment-btn {
+            border: 1px solid #d7def7;
+            background: #fff;
+            color: #1a73e8;
+            border-radius: 999px;
             padding: 8px 12px;
             font-size: 14px;
         }
-
-        .search-section {
-            margin-bottom: 20px;
+        .segment-btn.active {
+            background: #1a73e8;
+            color: #fff;
+            border-color: #1a73e8;
+        }
+        .toggle-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .toggle-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #d9e4ff;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background: #fff;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            border-radius: 999px;
+            padding: 2px 8px;
+            margin-left: 6px;
+            background: #eef3ff;
+            color: #1a73e8;
         }
 
         .search-input {
-            background: white;
+            background: #fff;
             padding: 12px;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .tyre-list {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .list-header {
@@ -160,143 +191,102 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .list-header h3 {
-            font-size: 18px;
-        }
-
         .tyre-item {
-            padding: 16px;
+            padding: 14px 16px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.2s;
+            gap: 10px;
         }
-
-        .tyre-item:last-child {
-            border-bottom: none;
-        }
-
-        .tyre-item:hover {
-            background: #f9f9f9;
-        }
-
-        .tyre-info {
-            flex: 1;
-        }
-
-        .tyre-size {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a73e8;
-        }
-
-        .tyre-details {
-            font-size: 14px;
-            color: #666;
-            margin-top: 4px;
-        }
+        .tyre-item:last-child { border-bottom: none; }
+        .tyre-size { font-size: 18px; font-weight: 700; color: #1a73e8; }
+        .tyre-details { margin-top: 4px; font-size: 14px; color: #666; }
+        .stock-meta { margin-top: 4px; font-size: 13px; color: #666; }
 
         .tyre-actions {
             display: flex;
+            align-items: center;
             gap: 8px;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
+        .action-btn {
+            min-width: 46px;
+            height: 44px;
+            border: 1px solid #d7def7;
+            background: #fff;
+            color: #1a73e8;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+        .action-btn:hover { background: #eef3ff; }
 
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .low-stock { background: #fff8e1; border-left: 4px solid #ffc107; }
 
-        .quantity-btn {
-            width: 36px;
-            height: 36px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s;
-        }
+        .empty-state { padding: 36px 18px; text-align: center; color: #999; }
+        .empty-state .icon { font-size: 44px; margin-bottom: 10px; }
 
-        .quantity-btn:hover {
-            background: #f0f0f0;
+        .history-list { list-style: none; }
+        .history-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            border-bottom: 1px solid #f1f1f1;
+            padding: 10px 0;
+            font-size: 14px;
         }
-
-        .quantity {
-            font-size: 18px;
-            font-weight: 600;
-            min-width: 30px;
-            text-align: center;
+        .history-item:last-child { border-bottom: none; }
+        .history-time { color: #777; font-size: 12px; }
+        .history-badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            align-self: center;
         }
-
-        .empty-state {
-            padding: 40px 20px;
-            text-align: center;
-            color: #999;
-        }
-
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
+        .incoming { background: #dff7e7; color: #1f7a3e; }
+        .sold { background: #ffe2e2; color: #a12424; }
 
         .toast {
             position: fixed;
-            bottom: 20px;
             left: 50%;
+            bottom: 20px;
             transform: translateX(-50%);
             background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
+            color: #fff;
+            border-radius: 24px;
+            padding: 12px 20px;
             font-size: 14px;
             opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1000;
+            pointer-events: none;
+            transition: opacity 0.25s;
+            z-index: 999;
         }
+        .toast.show { opacity: 1; }
 
-        .toast.show {
-            opacity: 1;
-        }
-
-        .low-stock {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-        }
-
-        .no-stock {
-            background: #f8d7da;
-            border-left: 4px solid #dc3545;
-        }
-
-        @media (max-width: 600px) {
-            .stats {
-                flex-direction: column;
-            }
-            
-            .tyre-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .tyre-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
+        @media (max-width: 700px) {
+            .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .owner-row { flex-direction: column; align-items: stretch; }
+            .form-row { flex-direction: column; }
+            .tyre-item { flex-direction: column; align-items: flex-start; }
+            .tyre-actions { justify-content: flex-start; }
+            .list-header { flex-direction: column; gap: 10px; align-items: stretch; }
+            .btn-danger { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🔧 Tyre Stock Manager</h1>
-        <p style="opacity: 0.9;">Garage Inventory System</p>
+        <h1 id="headerTitle">🔧 Marek's Tyre Stock Manager</h1>
+        <p>Simple, fast stock control for the garage</p>
+    </div>
+
+    <div class="owner-row">
+        <label for="ownerName">Garage owner name</label>
+        <input type="text" id="ownerName" value="Marek" maxlength="30" placeholder="e.g. Marek">
+        <button type="button" class="btn-secondary" onclick="saveOwnerName()">Save Name</button>
     </div>
 
     <div class="stats">
@@ -310,292 +300,397 @@
         </div>
         <div class="stat-card">
             <div class="number" id="lowStock">0</div>
-            <div class="label">Low Stock</div>
+            <div class="label">Low Stock (≤2)</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="soldToday">0</div>
+            <div class="label">Sold Today</div>
         </div>
     </div>
 
-    <div class="add-tyre-section">
-        <h3 style="margin-bottom: 15px;">Add New Tyre</h3>
+    <div class="card">
+        <h3>Add Incoming Tyres</h3>
         <div class="form-group">
-            <label>Size</label>
-            <input type="text" id="tyreSize" placeholder="e.g., 205/55R16" list="sizeSuggestions">
+            <label for="tyreSize">Size</label>
+            <input type="text" id="tyreSize" placeholder="e.g. 205/55R16" list="sizeSuggestions">
             <datalist id="sizeSuggestions">
-                <option value="195/65R15">
-                <option value="205/55R16">
-                <option value="225/45R17">
-                <option value="205/60R16">
-                <option value="215/55R17">
-                <option value="225/40R18">
-                <option value="235/45R17">
-                <option value="185/65R15">
-                <option value="195/55R16">
+                <option value="195/65R15"><option value="205/55R16"><option value="225/45R17">
+                <option value="205/60R16"><option value="215/55R17"><option value="225/40R18">
+                <option value="235/45R17"><option value="185/65R15"><option value="195/55R16">
                 <option value="245/40R18">
             </datalist>
         </div>
         <div class="form-row">
             <div class="form-group" style="flex: 1;">
-                <label>Brand</label>
-                <select id="tyreBrand">
-                    <option value="">Select Brand</option>
-                    <optgroup label="Premium Brands">
-                        <option value="Michelin">Michelin</option>
-                        <option value="Bridgestone">Bridgestone</option>
-                        <option value="Continental">Continental</option>
-                        <option value="Pirelli">Pirelli</option>
-                        <option value="Goodyear">Goodyear</option>
-                        <option value="Dunlop">Dunlop</option>
-                    </optgroup>
-                    <optgroup label="Mid-Range">
-                        <option value="Hankook">Hankook</option>
-                        <option value="Kumho">Kumho</option>
-                        <option value="Falken">Falken</option>
-                        <option value="Yokohama">Yokohama</option>
-                        <option value="Toyo">Toyo</option>
-                        <option value="Nexen">Nexen</option>
-                    </optgroup>
-                    <optgroup label="Budget Chinese Brands">
-                        <option value="Linglong">Linglong</option>
-                        <option value="Triangle">Triangle</option>
-                        <option value="Sailun">Sailun</option>
-                        <option value="Aeolus">Aeolus</option>
-                        <option value="Giti">Giti</option>
-                        <option value="Double Coin">Double Coin</option>
-                        <option value="Wanli">Wanli</option>
-                        <option value="WestLake">WestLake</option>
-                        <option value="Chaoyang">Chaoyang</option>
-                        <option value="Goodride">Goodride</option>
-                    </optgroup>
-                </select>
+                <label for="tyreBrand">Brand (type or tap)</label>
+                <input type="text" id="tyreBrand" list="brandSuggestions" placeholder="e.g. Michelin">
+                <datalist id="brandSuggestions">
+                    <option value="Michelin"><option value="Continental"><option value="Pirelli">
+                    <option value="Goodyear"><option value="Dunlop"><option value="Nokian Tyres">
+                    <option value="Vredestein"><option value="Uniroyal"><option value="Barum">
+                    <option value="Debica"><option value="Sava"><option value="Hankook">
+                    <option value="Kumho"><option value="Nexen"><option value="Falken">
+                    <option value="Yokohama"><option value="Toyo"><option value="Maxxis">
+                    <option value="Linglong"><option value="Triangle"><option value="Sailun">
+                    <option value="Giti"><option value="Goodride"><option value="WestLake">
+                    <option value="Austone"><option value="Double Coin">
+                </datalist>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Quantity</label>
-                <input type="number" id="tyreQuantity" value="1" min="1" max="100">
+                <label for="tyreQuantity">Quantity</label>
+                <div class="quantity-stepper">
+                    <button type="button" class="btn-outline" onclick="adjustAddQuantity(-1)" aria-label="Decrease quantity">−</button>
+                    <input type="number" id="tyreQuantity" value="1" min="1" max="200">
+                    <button type="button" class="btn-outline" onclick="adjustAddQuantity(1)" aria-label="Increase quantity">+</button>
+                </div>
             </div>
         </div>
-        <button class="btn-primary" onclick="addTyre()">➕ Add to Stock</button>
-    </div>
-
-    <div class="search-section">
-        <div class="search-input">
-            <input type="text" id="searchInput" placeholder="🔍 Search by size or brand..." onkeyup="renderInventory()">
+        <div class="form-group">
+            <label>Vehicle type</label>
+            <div class="segment-row" id="vehicleTypeSelector">
+                <button type="button" class="segment-btn active" onclick="setVehicleType('Passenger')">Passenger</button>
+                <button type="button" class="segment-btn" onclick="setVehicleType('Van')">Van</button>
+                <button type="button" class="segment-btn" onclick="setVehicleType('Motorcycle')">Motorcycle</button>
+            </div>
         </div>
+        <div class="form-group">
+            <label>Tyre specs</label>
+            <div class="toggle-row">
+                <label class="toggle-pill"><input type="checkbox" id="isEV"> EV / Electric-ready</label>
+                <label class="toggle-pill"><input type="checkbox" id="isRunFlat"> Run-flat</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Quick brand buttons</label>
+            <div class="quick-brands">
+                <button type="button" onclick="pickBrand('Michelin')">Michelin</button>
+                <button type="button" onclick="pickBrand('Continental')">Continental</button>
+                <button type="button" onclick="pickBrand('Pirelli')">Pirelli</button>
+                <button type="button" onclick="pickBrand('Goodyear')">Goodyear</button>
+                <button type="button" onclick="pickBrand('Nokian Tyres')">Nokian</button>
+                <button type="button" onclick="pickBrand('Hankook')">Hankook</button>
+                <button type="button" onclick="pickBrand('Kumho')">Kumho</button>
+                <button type="button" onclick="pickBrand('Nexen')">Nexen</button>
+                <button type="button" onclick="pickBrand('Linglong')">Linglong</button>
+                <button type="button" onclick="pickBrand('Triangle')">Triangle</button>
+                <button type="button" onclick="pickBrand('Sailun')">Sailun</button>
+                <button type="button" onclick="pickBrand('WestLake')">WestLake</button>
+            </div>
+        </div>
+        <button type="button" class="btn-primary" onclick="addTyre()">➕ Add Incoming Stock</button>
     </div>
 
-    <div class="tyre-list">
+    <div class="search-input">
+        <input type="text" id="searchInput" placeholder="🔍 Search by size or brand" oninput="renderInventory()">
+    </div>
+
+    <div class="card" style="padding:0; overflow:hidden;">
         <div class="list-header">
             <h3>📦 Current Stock</h3>
-            <button class="btn-danger btn-sm" onclick="clearInventory()" style="font-size: 12px;">🗑️ Clear All</button>
+            <button type="button" class="btn-danger" onclick="clearInventory()">🗑️ Clear All</button>
         </div>
-        <div id="inventoryList">
-            <div class="empty-state">
-                <div class="icon">📭</div>
-                <p>No tyres in stock</p>
-                <p style="font-size: 12px;">Add tyres using the form above</p>
-            </div>
+        <div id="inventoryList"></div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:8px;">
+            <h3 style="margin:0;">🧾 Recent Movements</h3>
+            <button type="button" class="btn-secondary" onclick="clearHistory()">Clear History</button>
         </div>
+        <ul class="history-list" id="historyList"></ul>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        // Initialize inventory from localStorage
         let inventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
+        let history = JSON.parse(localStorage.getItem('tyreHistory')) || [];
+        let ownerName = localStorage.getItem('tyreOwnerName') || 'Marek';
+        let selectedVehicleType = 'Passenger';
 
-        function saveInventory() {
+        function saveAll() {
             localStorage.setItem('tyreInventory', JSON.stringify(inventory));
+            localStorage.setItem('tyreHistory', JSON.stringify(history));
+            localStorage.setItem('tyreOwnerName', ownerName);
             updateStats();
             renderInventory();
+            renderHistory();
+            renderOwnerName();
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('en-IE', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }).format(date);
+        }
+
+        function isToday(dateString) {
+            const d = new Date(dateString);
+            const now = new Date();
+            return d.getFullYear() === now.getFullYear() &&
+                d.getMonth() === now.getMonth() &&
+                d.getDate() === now.getDate();
+        }
+
+        function addHistory(type, item, quantity) {
+            history.unshift({
+                id: crypto.randomUUID(),
+                type,
+                brand: item.brand,
+                size: item.size,
+                vehicleType: item.vehicleType || 'Passenger',
+                quantity,
+                at: new Date().toISOString()
+            });
+            history = history.slice(0, 60);
         }
 
         function updateStats() {
             const totalTyres = inventory.reduce((sum, item) => sum + item.quantity, 0);
             const uniqueSizes = new Set(inventory.map(item => item.size)).size;
             const lowStock = inventory.filter(item => item.quantity <= 2).length;
+            const soldToday = history
+                .filter(entry => entry.type === 'sold' && isToday(entry.at))
+                .reduce((sum, entry) => sum + entry.quantity, 0);
 
             document.getElementById('totalTyres').textContent = totalTyres;
             document.getElementById('uniqueSizes').textContent = uniqueSizes;
             document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('soldToday').textContent = soldToday;
+        }
+
+        function renderOwnerName() {
+            document.getElementById('ownerName').value = ownerName;
+            document.getElementById('headerTitle').textContent = `🔧 ${ownerName}'s Tyre Stock Manager`;
+        }
+
+        function saveOwnerName() {
+            const candidate = document.getElementById('ownerName').value.trim();
+            ownerName = candidate || 'Marek';
+            saveAll();
+            showToast(`✅ Saved name: ${ownerName}`);
+        }
+
+        function normalizeTyreSize(size) {
+            return size.toUpperCase().replace(/\s+/g, '');
         }
 
         function addTyre() {
-            const size = document.getElementById('tyreSize').value.trim();
-            const brand = document.getElementById('tyreBrand').value;
-            const quantity = parseInt(document.getElementById('tyreQuantity').value);
+            const sizeRaw = document.getElementById('tyreSize').value.trim();
+            const size = normalizeTyreSize(sizeRaw);
+            const brand = document.getElementById('tyreBrand').value.trim();
+            const quantity = parseInt(document.getElementById('tyreQuantity').value, 10);
+            const isEV = document.getElementById('isEV').checked;
+            const isRunFlat = document.getElementById('isRunFlat').checked;
 
             if (!size) {
-                showToast('⚠️ Please enter a tyre size');
+                showToast('⚠️ Please enter tyre size');
                 return;
             }
-
             if (!brand) {
                 showToast('⚠️ Please select a brand');
                 return;
             }
-
             if (!quantity || quantity < 1) {
                 showToast('⚠️ Quantity must be at least 1');
                 return;
             }
 
-            // Check if this exact combination exists
-            const existingIndex = inventory.findIndex(
-                item => item.size === size && item.brand === brand
+            const existing = inventory.find(item =>
+                item.size === size &&
+                item.brand === brand &&
+                item.vehicleType === selectedVehicleType &&
+                !!item.isEV === isEV &&
+                !!item.isRunFlat === isRunFlat
             );
-
-            if (existingIndex !== -1) {
-                inventory[existingIndex].quantity += quantity;
-                showToast(`✅ Added ${quantity} more ${brand} ${size} (Total: ${inventory[existingIndex].quantity})`);
+            if (existing) {
+                existing.quantity += quantity;
+                addHistory('incoming', existing, quantity);
+                showToast(`✅ Incoming +${quantity}: ${brand} ${size}`);
             } else {
-                inventory.push({
+                const item = {
                     id: Date.now(),
-                    size: size,
-                    brand: brand,
-                    quantity: quantity
-                });
-                showToast(`✅ Added ${quantity}x ${brand} ${size}`);
+                    size,
+                    brand,
+                    quantity,
+                    vehicleType: selectedVehicleType,
+                    isEV,
+                    isRunFlat
+                };
+                inventory.push(item);
+                addHistory('incoming', item, quantity);
+                showToast(`✅ Added new stock: ${brand} ${size} (${quantity})`);
             }
 
-            // Clear form
             document.getElementById('tyreSize').value = '';
-            document.getElementById('tyreBrand').value = '';
+            document.getElementById('tyreBrand').value = brand;
             document.getElementById('tyreQuantity').value = '1';
+            document.getElementById('isEV').checked = false;
+            document.getElementById('isRunFlat').checked = false;
+            saveAll();
+        }
 
-            saveInventory();
+        function setVehicleType(vehicleType) {
+            selectedVehicleType = vehicleType;
+            document.querySelectorAll('#vehicleTypeSelector .segment-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim() === vehicleType);
+            });
+        }
+
+        function adjustAddQuantity(change) {
+            const input = document.getElementById('tyreQuantity');
+            const current = parseInt(input.value || '1', 10);
+            const next = Math.max(1, Math.min(200, current + change));
+            input.value = String(next);
+        }
+
+        function pickBrand(brand) {
+            document.getElementById('tyreBrand').value = brand;
+            showToast(`🏷️ Brand selected: ${brand}`);
+        }
+
+        function markIncoming(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            item.quantity += 1;
+            addHistory('incoming', item, 1);
+            saveAll();
+            showToast(`📥 Incoming +1: ${item.brand} ${item.size}`);
+        }
+
+        function markSold(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+
+            item.quantity -= 1;
+            addHistory('sold', item, 1);
+
+            if (item.quantity <= 0) {
+                inventory = inventory.filter(i => i.id !== id);
+                showToast(`🛒 Sold last tyre: ${item.brand} ${item.size}`);
+            } else {
+                showToast(`🛒 Sold 1: ${item.brand} ${item.size} (${item.quantity} left)`);
+            }
+            saveAll();
         }
 
         function removeTyre(id) {
-            const item = inventory.find(item => item.id === id);
-            if (item && confirm(`Remove all ${item.brand} ${item.size} from inventory?`)) {
-                inventory = inventory.filter(item => item.id !== id);
-                saveInventory();
-                showToast('🗑️ Tyre removed from inventory');
-            }
-        }
-
-        function decreaseQuantity(id) {
-            const item = inventory.find(item => item.id === id);
-            if (item) {
-                if (item.quantity > 1) {
-                    item.quantity--;
-                    showToast(`➖ ${item.brand} ${item.size}: ${item.quantity} remaining`);
-                } else {
-                    if (confirm(`This was the last ${item.brand} ${item.size}. Remove from inventory?`)) {
-                        inventory = inventory.filter(item => item.id !== id);
-                        showToast('🗑️ Last tyre removed');
-                    }
-                }
-                saveInventory();
-            }
-        }
-
-        function increaseQuantity(id) {
-            const item = inventory.find(item => item.id === id);
-            if (item) {
-                item.quantity++;
-                saveInventory();
-                showToast(`➕ ${item.brand} ${item.size}: ${item.quantity} in stock`);
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            if (confirm(`Remove all ${item.brand} ${item.size} from stock?`)) {
+                inventory = inventory.filter(i => i.id !== id);
+                saveAll();
+                showToast('🗑️ Tyre line removed');
             }
         }
 
         function clearInventory() {
-            if (inventory.length === 0) return;
-            if (confirm('Are you sure you want to clear the entire inventory? This cannot be undone.')) {
+            if (!inventory.length) return;
+            if (confirm('Clear entire inventory? This cannot be undone.')) {
                 inventory = [];
-                saveInventory();
+                saveAll();
                 showToast('🗑️ Inventory cleared');
             }
         }
 
-        function renderInventory() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const listElement = document.getElementById('inventoryList');
-
-            let filteredInventory = inventory;
-            if (searchTerm) {
-                filteredInventory = inventory.filter(item =>
-                    item.size.toLowerCase().includes(searchTerm) ||
-                    item.brand.toLowerCase().includes(searchTerm)
-                );
+        function clearHistory() {
+            if (!history.length) return;
+            if (confirm('Clear stock movement history?')) {
+                history = [];
+                saveAll();
+                showToast('🧹 History cleared');
             }
+        }
 
-            if (filteredInventory.length === 0) {
-                listElement.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <p>${searchTerm ? 'No tyres match your search' : 'No tyres in stock'}</p>
-                        <p style="font-size: 12px;">${searchTerm ? 'Try a different search term' : 'Add tyres using the form above'}</p>
-                    </div>
-                `;
+        function renderInventory() {
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            const list = document.getElementById('inventoryList');
+            const filtered = term
+                ? inventory.filter(item => item.brand.toLowerCase().includes(term) || item.size.toLowerCase().includes(term))
+                : [...inventory];
+
+            if (!filtered.length) {
+                list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${term ? 'No tyres match search' : 'No tyres in stock'}</p><p style="font-size:12px;">${term ? 'Try different size/brand' : 'Add incoming stock above'}</p></div>`;
                 return;
             }
 
-            listElement.innerHTML = filteredInventory
-                .sort((a, b) => a.size.localeCompare(b.size))
-                .map(item => {
-                    let stockClass = '';
-                    if (item.quantity === 0) stockClass = 'no-stock';
-                    else if (item.quantity <= 2) stockClass = 'low-stock';
-                    
-                    return `
-                        <div class="tyre-item ${stockClass}">
-                            <div class="tyre-info">
-                                <div class="tyre-size">${item.size}</div>
-                                <div class="tyre-details">
-                                    🏭 ${item.brand} | 
-                                    📦 Qty: <strong>${item.quantity}</strong>
-                                    ${item.quantity <= 2 ? ' ⚠️ LOW' : ''}
-                                </div>
-                            </div>
-                            <div class="tyre-actions">
-                                <div class="quantity-control">
-                                    <button class="quantity-btn" onclick="decreaseQuantity(${item.id})" title="Remove one">−</button>
-                                    <span class="quantity">${item.quantity}</span>
-                                    <button class="quantity-btn" onclick="increaseQuantity(${item.id})" title="Add one">+</button>
-                                </div>
-                                <button class="btn-danger btn-sm" onclick="removeTyre(${item.id})" title="Delete all">
-                                    🗑️
-                                </button>
-                            </div>
+            filtered.sort((a, b) => a.size.localeCompare(b.size));
+            list.innerHTML = filtered.map(item => `
+                <div class="tyre-item ${item.quantity <= 2 ? 'low-stock' : ''}">
+                    <div>
+                        <div class="tyre-size">${item.size}</div>
+                        <div class="tyre-details">🏭 ${item.brand}</div>
+                        <div class="stock-meta">
+                            🚘 ${item.vehicleType || 'Passenger'}
+                            ${item.isEV ? '<span class="badge">EV</span>' : ''}
+                            ${item.isRunFlat ? '<span class="badge">Run-flat</span>' : ''}
                         </div>
-                    `;
-                })
-                .join('');
+                        <div class="stock-meta">📦 In stock: <strong>${item.quantity}</strong>${item.quantity <= 2 ? ' • ⚠️ Low stock' : ''}</div>
+                    </div>
+                    <div class="tyre-actions">
+                        <button type="button" class="action-btn" onclick="markIncoming(${item.id})" title="Incoming one">+1 In</button>
+                        <button type="button" class="action-btn" onclick="markSold(${item.id})" title="Sold one">-1 Sold</button>
+                        <button type="button" class="btn-danger" onclick="removeTyre(${item.id})" title="Delete tyre line">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (!history.length) {
+                list.innerHTML = '<li class="empty-state" style="padding:20px 0;">No movement logged yet.</li>';
+                return;
+            }
+
+            list.innerHTML = history.slice(0, 12).map(entry => `
+                <li class="history-item">
+                    <div>
+                        <div>${entry.type === 'incoming' ? '📥 Incoming' : '🛒 Sold'} <strong>${entry.quantity}</strong> · ${entry.brand} ${entry.size} (${entry.vehicleType || 'Passenger'})</div>
+                        <div class="history-time">${formatDate(new Date(entry.at))}</div>
+                    </div>
+                    <span class="history-badge ${entry.type === 'incoming' ? 'incoming' : 'sold'}">
+                        ${entry.type === 'incoming' ? 'IN' : 'SOLD'}
+                    </span>
+                </li>
+            `).join('');
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            setTimeout(() => toast.classList.remove('show'), 1900);
         }
 
-        // Handle Enter key in size input
-        document.getElementById('tyreSize').addEventListener('keypress', function(e) {
+        document.getElementById('tyreSize').addEventListener('keypress', e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 addTyre();
             }
         });
 
-        // Prevent form submission on enter in other inputs
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type === 'number') {
+        document.getElementById('ownerName').addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveOwnerName();
+            }
+        });
+
+        document.getElementById('tyreBrand').addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 addTyre();
             }
         });
 
-        // Initial render
-        updateStats();
-        renderInventory();
+        saveAll();
 
-        // Register service worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {
-                    // Service worker registration failed - app still works without it
+                navigator.serviceWorker.register('./sw.js').catch(() => {
+                    // keep app functional without service worker
                 });
             });
         }
