@@ -1,5 +1,5 @@
 // sw.js - Service Worker for Marek's Tyre Stock Manager
-const CACHE_NAME = 'marek-tyre-stock-v3';
+const CACHE_NAME = 'marek-tyre-stock-v2';
 const ASSETS = [
     './',
     './index.html',
@@ -24,25 +24,15 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
-    const requestUrl = new URL(event.request.url);
-    const isNavigation = event.request.mode === 'navigate' ||
-        (event.request.headers.get('accept') || '').includes('text/html');
 
     event.respondWith(
-        (async () => {
-            try {
-                const networkResponse = await fetch(event.request, { cache: 'no-store' });
-                if (requestUrl.origin === location.origin && networkResponse.ok) {
-                    const cache = await caches.open(CACHE_NAME);
-                    cache.put(event.request, networkResponse.clone());
-                }
-                return networkResponse;
-            } catch (error) {
-                const cached = await caches.match(event.request);
-                if (cached) return cached;
-                if (isNavigation) return caches.match('./index.html');
-                throw error;
-            }
-        })()
+        caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            return fetch(event.request).then(response => {
+                const copy = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+                return response;
+            });
+        })
     );
 });
