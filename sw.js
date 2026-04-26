@@ -1,5 +1,5 @@
 // sw.js - Service Worker for Marek's Tyre Stock Manager
-const CACHE_NAME = 'marek-tyre-stock-v2';
+const CACHE_NAME = 'marek-tyre-stock-v3';
 const ASSETS = [
     './',
     './index.html',

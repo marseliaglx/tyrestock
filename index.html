@@ -256,13 +256,24 @@
                     </optgroup>
                     <optgroup label="Budget Brands">
                         <option>Linglong</option><option>Triangle</option><option>Sailun</option>
-                        <option>Giti</option><option>Goodride</option><option>WestLake</option><option>iLink</option>
+                        <option>Giti</option><option>Goodride</option><option>WestLake</option><option>Ailing</option>
                     </optgroup>
                 </select>
             </div>
             <div class="form-group" style="flex: 1;">
                 <label for="tyreQuantity">Quantity</label>
                 <input type="number" id="tyreQuantity" value="1" min="1" max="200">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+                <label for="tyreLoadIndex">Load Index</label>
+                <input type="text" id="tyreLoadIndex" placeholder="e.g. 91" maxlength="8">
+                <small style="display:block; margin-top:6px; color:#666; font-size:12px;">The tyre load rating is a numerical code which corresponds to a maximum load (in kg) that can be carried by a single tyre.</small>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="tyreSpeedIndex">Speed Index (optional)</label>
+                <input type="text" id="tyreSpeedIndex" placeholder="e.g. V" maxlength="8">
             </div>
         </div>
         <button type="button" class="btn-primary" onclick="addTyre()">➕ Add Incoming Stock</button>
@@ -376,6 +387,8 @@
                 type,
                 brand: item.brand,
                 size: item.size,
+                loadIndex: item.loadIndex || '',
+                speedIndex: item.speedIndex || '',
                 quantity,
                 at: new Date().toISOString()
             });
@@ -417,7 +430,8 @@
             const size = normalizeTyreSize(sizeRaw);
             const brand = document.getElementById('tyreBrand').value;
             const quantity = parseInt(document.getElementById('tyreQuantity').value, 10);
-            const vehicleType = getSelectedVehicleType();
+            const loadIndex = document.getElementById('tyreLoadIndex').value.trim().toUpperCase();
+            const speedIndex = document.getElementById('tyreSpeedIndex').value.trim().toUpperCase();
 
             if (!size) {
                 showToast('⚠️ Please enter tyre size');
@@ -433,14 +447,17 @@
             }
 
             const existing = inventory.find(item =>
-                buildInventoryKey(item) === buildInventoryKey({ size, brand, vehicleType })
+                item.size === size &&
+                item.brand === brand &&
+                (item.loadIndex || '') === loadIndex &&
+                (item.speedIndex || '') === speedIndex
             );
             if (existing) {
                 existing.quantity += quantity;
                 addHistory('incoming', existing, quantity);
                 showToast(`✅ Incoming +${quantity}: ${brand} ${size}`);
             } else {
-                const item = { id: Date.now(), size, brand, quantity, vehicleType: normalizeVehicleType(vehicleType) };
+                const item = { id: Date.now(), size, brand, quantity, loadIndex, speedIndex };
                 inventory.push(item);
                 addHistory('incoming', item, quantity);
                 showToast(`✅ Added new stock: ${brand} ${size} (${quantity})`);
@@ -449,6 +466,8 @@
             document.getElementById('tyreSize').value = '';
             document.getElementById('tyreBrand').value = brand;
             document.getElementById('tyreQuantity').value = '1';
+            document.getElementById('tyreLoadIndex').value = '';
+            document.getElementById('tyreSpeedIndex').value = '';
             saveAll();
         }
 
@@ -509,7 +528,12 @@
             const term = document.getElementById('searchInput').value.toLowerCase().trim();
             const list = document.getElementById('inventoryList');
             const filtered = term
-                ? inventory.filter(item => item.brand.toLowerCase().includes(term) || item.size.toLowerCase().includes(term))
+                ? inventory.filter(item =>
+                    item.brand.toLowerCase().includes(term) ||
+                    item.size.toLowerCase().includes(term) ||
+                    (item.loadIndex || '').toLowerCase().includes(term) ||
+                    (item.speedIndex || '').toLowerCase().includes(term)
+                )
                 : [...inventory];
 
             if (!filtered.length) {
@@ -523,6 +547,7 @@
                     <div>
                         <div class="tyre-size">${item.size}</div>
                         <div class="tyre-details">🏭 ${item.brand}</div>
+                        <div class="stock-meta">🔢 LI/SI: <strong>${item.loadIndex || '—'}/${item.speedIndex || '—'}</strong></div>
                         <div class="stock-meta">📦 In stock: <strong>${item.quantity}</strong>${item.quantity <= 2 ? ' • ⚠️ Low stock' : ''}</div>
                     </div>
                     <div class="tyre-actions">
@@ -545,6 +570,7 @@
                 <li class="history-item">
                     <div>
                         <div>${entry.type === 'incoming' ? '📥 Incoming' : '🛒 Sold'} <strong>${entry.quantity}</strong> · ${entry.brand} ${entry.size}</div>
+                        <div class="history-time">LI/SI: ${(entry.loadIndex || '—')}/${(entry.speedIndex || '—')}</div>
                         <div class="history-time">${formatDate(new Date(entry.at))}</div>
                     </div>
                     <span class="history-badge ${entry.type === 'incoming' ? 'incoming' : 'sold'}">
