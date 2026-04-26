@@ -606,9 +606,19 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(() => {
-                    // keep app functional without service worker
-                });
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        registration.update();
+                        setInterval(() => registration.update(), 60 * 60 * 1000);
+                        document.addEventListener('visibilitychange', () => {
+                            if (document.visibilityState === 'visible') {
+                                registration.update();
+                            }
+                        });
+                    })
+                    .catch(() => {
+                        // keep app functional without service worker
+                    });
             });
         }
     </script>
