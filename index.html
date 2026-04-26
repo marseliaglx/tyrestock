@@ -256,7 +256,7 @@
                     </optgroup>
                     <optgroup label="Budget Brands">
                         <option>Linglong</option><option>Triangle</option><option>Sailun</option>
-                        <option>Giti</option><option>Goodride</option><option>WestLake</option>
+                        <option>Giti</option><option>Goodride</option><option>WestLake</option><option>iLink</option>
                     </optgroup>
                 </select>
             </div>
@@ -292,7 +292,8 @@
 
     <script>
         const DEFAULT_VEHICLE_TYPE = 'Passenger';
-        let inventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
+        const rawInventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
+        let inventory = [];
         let history = JSON.parse(localStorage.getItem('tyreHistory')) || [];
         let ownerName = localStorage.getItem('tyreOwnerName') || 'Marek';
 
@@ -330,6 +331,13 @@
             });
 
             return Array.from(merged.values());
+        }
+
+        function initializeInventory() {
+            inventory = normalizeInventoryRecords(rawInventory);
+            if (inventory.length !== rawInventory.length || rawInventory.some(item => normalizeVehicleType(item?.vehicleType) !== item?.vehicleType)) {
+                localStorage.setItem('tyreInventory', JSON.stringify(inventory));
+            }
         }
 
         function getSelectedVehicleType() {
@@ -567,7 +575,7 @@
             }
         });
 
-        inventory = normalizeInventoryRecords(inventory);
+        initializeInventory();
         saveAll();
 
         if ('serviceWorker' in navigator) {
