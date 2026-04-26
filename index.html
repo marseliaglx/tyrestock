@@ -302,9 +302,59 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        let inventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
+        const DEFAULT_VEHICLE_TYPE = 'Passenger';
+        const rawInventory = JSON.parse(localStorage.getItem('tyreInventory')) || [];
+        let inventory = [];
         let history = JSON.parse(localStorage.getItem('tyreHistory')) || [];
         let ownerName = localStorage.getItem('tyreOwnerName') || 'Marek';
+
+        function normalizeVehicleType(vehicleType) {
+            if (typeof vehicleType !== 'string') return DEFAULT_VEHICLE_TYPE;
+            return vehicleType.trim() || DEFAULT_VEHICLE_TYPE;
+        }
+
+        function buildInventoryKey(item) {
+            const size = normalizeTyreSize(item.size || '');
+            const brand = (item.brand || '').trim();
+            const vehicleType = normalizeVehicleType(item.vehicleType);
+            return `${size}::${brand}::${vehicleType}`;
+        }
+
+        function normalizeInventoryRecords(items) {
+            const merged = new Map();
+
+            items.forEach(rawItem => {
+                const item = {
+                    ...rawItem,
+                    size: normalizeTyreSize(rawItem.size || ''),
+                    brand: (rawItem.brand || '').trim(),
+                    quantity: Number(rawItem.quantity) || 0,
+                    vehicleType: normalizeVehicleType(rawItem.vehicleType)
+                };
+                const key = buildInventoryKey(item);
+                const existing = merged.get(key);
+
+                if (existing) {
+                    existing.quantity += item.quantity;
+                    return;
+                }
+                merged.set(key, item);
+            });
+
+            return Array.from(merged.values());
+        }
+
+        function initializeInventory() {
+            inventory = normalizeInventoryRecords(rawInventory);
+            if (inventory.length !== rawInventory.length || rawInventory.some(item => normalizeVehicleType(item?.vehicleType) !== item?.vehicleType)) {
+                localStorage.setItem('tyreInventory', JSON.stringify(inventory));
+            }
+        }
+
+        function getSelectedVehicleType() {
+            const activeSegment = document.querySelector('.vehicle-segment.active');
+            return activeSegment?.dataset?.vehicleType || DEFAULT_VEHICLE_TYPE;
+        }
 
         function saveAll() {
             localStorage.setItem('tyreInventory', JSON.stringify(inventory));
@@ -551,6 +601,7 @@
             }
         });
 
+        initializeInventory();
         saveAll();
 
         if ('serviceWorker' in navigator) {
